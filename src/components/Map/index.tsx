@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 
 const MAPBOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_API_KEY
@@ -19,6 +20,8 @@ export type MapProps = {
 }
 
 const Map = ({ places }: MapProps) => {
+  const router = useRouter()
+
   return (
     <MapContainer
       center={[0, 0]}
@@ -27,7 +30,7 @@ const Map = ({ places }: MapProps) => {
     >
       <TileLayer
         attribution='© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url={`https://api.mapbox.com/styles/v1/${MAPBOX_USERID}/${MAPBOX_STYLEID}/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_API_KEY}`}
+        url={`https://tile.openstreetmap.org/{z}/{x}/{y}.png`}
       />
 
       {places?.map(({ id, slug, name, location }) => {
@@ -38,6 +41,11 @@ const Map = ({ places }: MapProps) => {
             key={`place-${id}`}
             position={[latitude, longitude]}
             title={name}
+            eventHandlers={{
+              click: () => {
+                router.push(`/place/${slug}`)
+              },
+            }}
           />
         )
       })}
